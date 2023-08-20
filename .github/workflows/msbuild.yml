@@ -16,7 +16,8 @@ jobs:
   build:
     strategy:
       matrix:
-        preset: [x86-release, x64-release]
+        arch: [x86, x64]
+        variants: [debug, release]
 
     runs-on: windows-latest
 
@@ -26,9 +27,13 @@ jobs:
     - name: Add MSBuild to PATH
       uses: microsoft/setup-msbuild@v1.0.2
 
+    - uses: ilammy/msvc-dev-cmd@v1.12.1
+      with:
+        arch: ${{ matrix.arch }}
+
     - name: Build
       working-directory: ${{env.GITHUB_WORKSPACE}}
       run: |
-        cmake --preset ${{ matrix.preset }}
-        cmake --build out/build/${{ matrix.preset }}
-        cmake --install out/build/${{ matrix.preset }}
+        cmake --preset ${{ matrix.arch }}-${{ matrix.variants }}
+        cmake --build out/build/${{ matrix.arch }}-${{ matrix.variants }}
+        cmake --install out/build/${{ matrix.arch }}-${{ matrix.variants }}
