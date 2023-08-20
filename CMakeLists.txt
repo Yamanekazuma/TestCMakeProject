@@ -9,4 +9,5 @@ project ("TestCMakeProject")
 add_executable (TestCMakeProject "TestCMakeProject.c" "TestCMakeProject.h")
 set_property(TARGET TestCMakeProject PROPERTY CXX_STANDARD 20)
 
+target_compile_options(TestCMakeProject PRIVATE /W4)
 target_link_options(TestCMakeProject PRIVATE /SUBSYSTEM:CONSOLE)
