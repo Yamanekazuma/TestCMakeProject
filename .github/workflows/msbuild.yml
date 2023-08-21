@@ -10,7 +10,7 @@ env:
   SOLUTION_FILE_PATH: .
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   build:
@@ -23,6 +23,19 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
+
+    - name: Install tools
+      run: |
+        pip install clang-format
+        git config --global user.email "action@github.com"
+        git config --global user.name "action"
+
+    - name: Refactor
+      run: |
+        clang-format -i -style=file:.clang-format *.c
+        git add .
+        git commit -m "Refactor by Github Actions"
+        git push origin main
 
     - uses: ilammy/msvc-dev-cmd@v1.12.1
       with:
