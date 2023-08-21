@@ -1,0 +1,18 @@
+BasedOnStyle: Chromium
+AlignConsecutiveMacros: 'true'
+AllowShortIfStatementsOnASingleLine: Never
+ColumnLimit: '120'
+IndentWidth: '2'
+UseTab: Never
+
+IncludeBlocks: Regroup
+
+IncludeCategories:
+  - Regex:	'(<Windows.h>)|(<Zydis.*>)'
+    Priority: 1
+  - Regex: '\"_.*\"'
+    Priority: 2
+  - Regex: '\".*\"'
+    Priority: 3
+  - Regex:  ".*"
+    Priority: 4
