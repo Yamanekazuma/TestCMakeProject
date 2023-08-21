@@ -1,10 +1,11 @@
-﻿#include <stdlib.h>
-#include "TestCMakeProject.h"
-#include <stdio.h>
-#include <assert.h>
+﻿#include "TestCMakeProject.h"
+
 #include <Windows.h>
 
+#include <assert.h>
+#include <stdio.h>
+#include <stdlib.h>
 
 int main(void) {
-	printf("Hello, World!");
+  printf("Hello, World!");
 }
