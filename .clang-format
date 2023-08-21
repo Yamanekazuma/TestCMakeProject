@@ -8,7 +8,7 @@ UseTab: Never
 IncludeBlocks: Regroup
 
 IncludeCategories:
-  - Regex:	'(<Windows.h>)|(<Zydis.*>)'
+  - Regex: '(<Windows.h>)|(<Zydis.*>)'
     Priority: 1
   - Regex: '\"_.*\"'
     Priority: 2
