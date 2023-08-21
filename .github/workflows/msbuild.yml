@@ -13,7 +13,26 @@ permissions:
   contents: write
 
 jobs:
+  refactor:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Install tools
+      run: |
+        sudo apt install clang-format
+
+    - name: Refactor
+      run: |
+        clang-format -i -style=file:.clang-format *.c
+        git config --global user.email "action@github.com"
+        git config --global user.name "action"
+        git add .
+        git commit -m "Refactor by Github Actions"
+        git push origin main
+    
   build:
+    needs: refactor
     strategy:
       matrix:
         arch: [x86, x64]
@@ -23,19 +42,6 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
-
-    - name: Install tools
-      run: |
-        pip install clang-format
-        git config --global user.email "action@github.com"
-        git config --global user.name "action"
-
-    - name: Refactor
-      run: |
-        clang-format -i -style=file:.clang-format *.c
-        git add .
-        git commit -m "Refactor by Github Actions"
-        git push origin main
 
     - uses: ilammy/msvc-dev-cmd@v1.12.1
       with:
