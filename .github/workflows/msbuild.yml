@@ -29,6 +29,8 @@ jobs:
         echo "ref_name = ${{ github.ref_name }}"
         echo "ref = ${{ github.ref }}"
         echo "base_ref = ${{ github.base_ref }}"
+        echo "head_ref1 = ${{ github.head_ref }}"
+        echo "head_ref2 = ${{ github.event.pull_request.head.ref }}"
 
     - name: Print push info
       if: ${{ github.event_name == 'push' }}
