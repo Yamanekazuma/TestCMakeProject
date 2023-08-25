@@ -32,7 +32,7 @@ jobs:
           | sed -sr "s/^(R|A|M).*\t(.+)/\2/"       \
           | sed -z "s/\n/ /g"                      \
         `" >> $GITHUB_OUTPUT
-        echo "FILES_CHANGED=${{ steps.changes.outputs.FILES_CHANGED }}"
+        git branch -a
 
     - name: Set target branch (PR)
       if: ${{ steps.changes.outputs.FILES_CHANGED != null && github.event_name == 'pull_request' }}
@@ -49,7 +49,6 @@ jobs:
     - name: Refactor
       if: ${{ steps.changes.outputs.FILES_CHANGED != null }}
       run: |
-        echo "TARGET_BRANCH: ${{ env.TARGET_BRANCH }}"
         clang-format -i -style=file:.clang-format ${{ steps.changes.outputs.FILES_CHANGED }}
         git config --global user.email "action@github.com"
         git config --global user.name "action"
