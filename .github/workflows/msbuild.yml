@@ -42,7 +42,6 @@ jobs:
       run: |
         echo "FILES_CHANGED<<EOF" >> $GITHUB_ENV
         git fetch origin ${{ github.ref_name }} --depth 1
-        git branch -a
         git diff --name-status origin/${{ github.ref_name }}..HEAD \
         | grep -E "^(M|A|R).*\.(c|h|cpp|hpp)" \
         | sed -sr "s/^(R|A|M).*\t(.+)/\2/" >> $GITHUB_ENV
