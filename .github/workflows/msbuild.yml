@@ -26,6 +26,7 @@ jobs:
       run: |
         git fetch origin --depth 1
         echo ${{ github.ref_name }}
+        echo ${{ github.ref }}
 
     - name: Refactor
       run: |
