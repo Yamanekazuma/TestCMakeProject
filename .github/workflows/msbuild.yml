@@ -29,13 +29,39 @@ jobs:
         echo ${{ github.ref }}
         echo ${{ github.event_name }}
 
-    - name: Refactor
+    - name: Print pr info
+      if: ${{ github.event_name == 'pull_request' }}
       run: |
-        clang-format -i -style=file:.clang-format *.c *.h
+        echo "event_name = ${{ github.event_name }}"
+        echo "ref_name = ${{ github.ref_name }}"
+        echo "ref = ${{ github.ref }}"
+        echo "base_ref = ${{ github.base_ref }}"
+
+    - name: Print push info
+      if: ${{ github.event_name == 'push' }}
+      run: |
+        echo "event_name = ${{ github.event_name }}"
+        echo "ref_name = ${{ github.ref_name }}"
+        echo "ref = ${{ github.ref }}"
+        echo "base_ref = ${{ github.event.base_ref }}"
+
+    - name: Set changed files
+      run: |
+        echo "FILES_CHANGED<<EOF" >> $GITHUB_ENV
+        git fetch origin ${{ github.ref_name }} --depth 1
+        git diff --name-status origin/${{ github.ref_name }}..HEAD \
+        | grep -E "^(M|A|R).*\.(c|h|cpp|hpp)" \
+        | sed -sr "s/^(R|A|M).*\t(.+)/\2/" >> $GITHUB_ENV
+        echo "EOF" >> $GITHUB_ENV
+
+    - name: Refactor
+      if: ${{ env.FILES_CHANGED }}
+      run: |
+        clang-format -i -style=file:.clang-format ${{ env.FILES_CHANGED }}
         git config --global user.email "action@github.com"
         git config --global user.name "action"
         git add .
-        (git commit -m "Refactor by Github Actions" && git push origin main) || expr 1 > /dev/null
+        (git commit -m "Refactor by Github Actions" && git push origin ${{ github.ref_name }}) || expr 1 > /dev/null
     
   build:
     needs: refactor
