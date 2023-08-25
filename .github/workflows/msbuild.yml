@@ -24,38 +24,35 @@ jobs:
 
     - name: Print pr info
       if: ${{ github.event_name == 'pull_request' }}
-      run: |
-        echo "event_name = ${{ github.event_name }}"
-        echo "ref_name = ${{ github.ref_name }}"
-        echo "ref = ${{ github.ref }}"
-        echo "base_ref = ${{ github.base_ref }}"
+      run: echo "TARGET_BRANCH=${{ github.head_ref }}" >> $GITHUB_ENV
 
     - name: Print push info
       if: ${{ github.event_name == 'push' }}
-      run: |
-        echo "event_name = ${{ github.event_name }}"
-        echo "ref_name = ${{ github.ref_name }}"
-        echo "ref = ${{ github.ref }}"
-        echo "base_ref = ${{ github.event.base_ref }}"
+      run: echo "TARGET_BRANCH=${{ github.ref_name }}" >> $GITHUB_ENV
+
+    - name: Through error
+      if: ${{ env.TARGET_BRANCH == null}}
+      run: echo "TARGET_BRANCH is undefined" 1>&2 && expr 0 > /dev/null
 
     - name: Set changed files
       run: |
+        echo "TARGET_BRANCH: ${{ env.TARGET_BRANCH }}"
         echo "FILES_CHANGED<<EOF" >> $GITHUB_ENV
-        git fetch origin ${{ github.ref_name }} --depth 1
-        git diff --name-status origin/${{ github.ref_name }}..HEAD \
+        git fetch origin ${{ env.TARGET_BRANCH }} --depth 1
+        git diff --name-status origin/${{ env.TARGET_BRANCH }}..HEAD \
         | grep -E "^(M|A|R).*\.(c|h|cpp|hpp)" \
         | sed -sr "s/^(R|A|M).*\t(.+)/\2/" >> $GITHUB_ENV
         echo "EOF" >> $GITHUB_ENV
         echo "FILE_CHANGED: ${{ env.FILE_CHANGED }}"
 
     - name: Refactor
-      if: ${{ env.FILES_CHANGED }}
+      if: ${{ env.FILES_CHANGED != null }}
       run: |
         clang-format -i -style=file:.clang-format ${{ env.FILES_CHANGED }}
         git config --global user.email "action@github.com"
         git config --global user.name "action"
         git add .
-        (git commit -m "Refactor by Github Actions" && git push origin ${{ github.ref_name }}) || expr 1 > /dev/null
+        (git commit -m "Refactor by Github Actions" && git push origin ${{ env.TARGET_BRANCH }}) || expr 1 > /dev/null
     
   build:
     needs: refactor
