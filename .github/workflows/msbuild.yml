@@ -53,6 +53,7 @@ jobs:
         | grep -E "^(M|A|R).*\.(c|h|cpp|hpp)" \
         | sed -sr "s/^(R|A|M).*\t(.+)/\2/" >> $GITHUB_ENV
         echo "EOF" >> $GITHUB_ENV
+        echo "FILE_CHANGED: ${{ env.FILE_CHANGED }}"
 
     - name: Refactor
       if: ${{ env.FILES_CHANGED }}
