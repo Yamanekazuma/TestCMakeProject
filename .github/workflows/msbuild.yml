@@ -51,6 +51,7 @@ jobs:
         clang-format -i -style=file:.clang-format ${{ steps.changes.outputs.FILES_CHANGED }}
         git config --global user.email "action@github.com"
         git config --global user.name "action"
+        git log
         git config pull.rebase false
         git pull origin ${{ env.TARGET_BRANCH }}
         git add .
