@@ -22,14 +22,18 @@ jobs:
       run: |
         sudo apt install clang-format
 
+    - name: Print Base
+      run: |
+        git fetch origin --depth 1
+        echo ${{ github.ref_name }}
+
     - name: Refactor
       run: |
-        clang-format -i -style=file:.clang-format *.c
+        clang-format -i -style=file:.clang-format *.c *.h
         git config --global user.email "action@github.com"
         git config --global user.name "action"
         git add .
-        git commit -m "Refactor by Github Actions"
-        git push origin main
+        (git commit -m "Refactor by Github Actions" && git push origin main) || expr 1 > /dev/null
     
   build:
     needs: refactor
