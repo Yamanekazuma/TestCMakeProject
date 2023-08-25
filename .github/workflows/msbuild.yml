@@ -53,7 +53,7 @@ jobs:
         git config --global user.name "action"
         git pull origin ${{ env.TARGET_BRANCH }}
         git add .
-        (git commit -m "Refactor by Github Actions" && git push origin HEAD:${{ env.TARGET_BRANCH }}) || expr 1 > /dev/null
+        (git commit -m "Refactor by Github Actions" && git push -f origin HEAD:${{ env.TARGET_BRANCH }}) || expr 1 > /dev/null
     
   build:
     needs: refactor
