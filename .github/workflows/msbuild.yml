@@ -31,7 +31,7 @@ jobs:
       run: echo "TARGET_BRANCH=${{ github.ref_name }}" >> $GITHUB_ENV
 
     - name: Through error
-      if: ${{ env.TARGET_BRANCH == null}}
+      #if: ${{ env.TARGET_BRANCH == null}}
       run: echo "TARGET_BRANCH is undefined" 1>&2 && expr 0 > /dev/null
 
     - name: Set changed files
