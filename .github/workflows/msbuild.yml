@@ -30,7 +30,7 @@ jobs:
         | grep -E "^(M|A|R).*\.(c|h|cpp|hpp)" \
         | sed -sr "s/^(R|A|M).*\t(.+)/\2/" >> $GITHUB_ENV
         echo " " >> $GITHUB_ENV
-        echo "FILES_CHANGED: ${{ env.FILES_CHANGED }}"
+        echo "FILES_CHANGED: `${{ env.FILES_CHANGED }} | sed -z "s/\n/ /g"`"
 
     - name: Set target branch (PR)
       if: ${{ env.FILES_CHANGED != null && github.event_name == 'pull_request' }}
@@ -48,7 +48,7 @@ jobs:
       if: ${{ env.FILES_CHANGED != null }}
       run: |
         echo "TARGET_BRANCH: ${{ env.TARGET_BRANCH }}"
-        clang-format -i -style=file:.clang-format ${{ env.FILES_CHANGED }}
+        clang-format -i -style=file:.clang-format `${{ env.TARGET_BRANCH }} | sed -z "s/\n/ /g"`
         git config --global user.email "action@github.com"
         git config --global user.name "action"
         git add .
