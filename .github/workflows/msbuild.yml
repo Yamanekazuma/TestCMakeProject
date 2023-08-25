@@ -27,6 +27,7 @@ jobs:
         git fetch origin --depth 1
         echo ${{ github.ref_name }}
         echo ${{ github.ref }}
+        echo ${{ github.event_name }}
 
     - name: Refactor
       run: |
