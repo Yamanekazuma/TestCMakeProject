@@ -24,7 +24,6 @@ jobs:
 
     - name: Set changed files
       run: |
-        echo "TARGET_BRANCH: ${{ env.TARGET_BRANCH }}"
         echo "FILES_CHANGED<<EOF" >> $GITHUB_ENV
         git fetch origin main --depth 1
         git diff --name-status origin/main..HEAD \
@@ -48,6 +47,7 @@ jobs:
     - name: Refactor
       if: ${{ env.FILES_CHANGED != null }}
       run: |
+        echo "TARGET_BRANCH: ${{ env.TARGET_BRANCH }}"
         clang-format -i -style=file:.clang-format ${{ env.FILES_CHANGED }}
         git config --global user.email "action@github.com"
         git config --global user.name "action"
