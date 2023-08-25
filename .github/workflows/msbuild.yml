@@ -24,13 +24,13 @@ jobs:
 
     - name: Set changed files
       run: |
-        echo "FILES_CHANGED<<EOF" >> $GITHUB_ENV
+        echo "FILES_CHANGED<< " >> $GITHUB_ENV
         git fetch origin main --depth 1
         git diff --name-status origin/main..HEAD \
         | grep -E "^(M|A|R).*\.(c|h|cpp|hpp)" \
         | sed -sr "s/^(R|A|M).*\t(.+)/\2/" >> $GITHUB_ENV
-        echo "EOF" >> $GITHUB_ENV
-        echo "FILE_CHANGED: ${{ env.FILE_CHANGED }}"
+        echo " " >> $GITHUB_ENV
+        echo "FILES_CHANGED: ${{ env.FILES_CHANGED }}"
 
     - name: Set target branch (PR)
       if: ${{ env.FILES_CHANGED != null && github.event_name == 'pull_request' }}
