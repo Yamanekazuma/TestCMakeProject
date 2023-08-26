@@ -24,10 +24,10 @@ jobs:
       if: ${{ github.event_name == 'push' }}
       run: echo "TARGET_BRANCH=${{ github.ref_name }}" >> $GITHUB_ENV
 
-    - name: Through undefined branch error
+    - name: Through error
       if: ${{ env.TARGET_BRANCH == null}}
-      run: echo "TARGET_BRANCH is undefined" 1>&2 && expr 0 > /dev/null
-      
+      run: echo 'TARGET_BRANCH is undefined.' >> $GITHUB_STEP_SUMMARY | expr 0 > /dev/null
+
     - name: Checkout
       uses: actions/checkout@v3
       with:
@@ -37,12 +37,11 @@ jobs:
     - name: Set changed files
       id: changes
       run: |
-        cat main.c
-        git diff --name-status origin/${{ env.TARGET_BRANCH }} ${{ github.sha }}
-        echo "FILES_CHANGED=`\
-          (git diff --name-only --diff-filter=AM origin/${{ env.TARGET_BRANCH }} ${{ github.sha }} 2> /dev/null) \
-          | grep -E "^.*\.(c|h|cpp|hpp)"           \
-          | sed -z "s/\n/ /g"                      \
+        git diff --name-status ${{ github.event.before }} ${{ github.sha }}
+        echo "FILES_CHANGED=`                                                                                      \
+          (git diff --name-only --diff-filter=AM origin/${{ github.event.before }} ${{ github.sha }} 2> /dev/null) \
+          | grep -E "^.*\.(c|h|cpp|hpp)"                                                                           \
+          | sed -z "s/\n/ /g"                                                                                      \
         `" >> $GITHUB_OUTPUT
 
     - name: Setup python
