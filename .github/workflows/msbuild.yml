@@ -16,7 +16,22 @@ jobs:
   refactor:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
+    - name: Set target branch (PR)
+      if: ${{ github.event_name == 'pull_request' }}
+      run: echo "TARGET_BRANCH=${{ github.head_ref }}" >> $GITHUB_ENV
+
+    - name: Set target branch (push)
+      if: ${{ github.event_name == 'push' }}
+      run: echo "TARGET_BRANCH=${{ github.ref_name }}" >> $GITHUB_ENV
+
+    - name: Through undefined branch error
+      if: ${{ env.TARGET_BRANCH == null}}
+      run: echo "TARGET_BRANCH is undefined" 1>&2 && expr 0 > /dev/null
+      
+    - name: Checkout
+      uses: actions/checkout@v3
+      with:
+        ref: ${{ env.TARGET_BRANCH }}
 
     - name: Install tools
       run: |
@@ -33,18 +48,6 @@ jobs:
           | sed -z "s/\n/ /g"                      \
         `" >> $GITHUB_OUTPUT
 
-    - name: Set target branch (PR)
-      if: ${{ steps.changes.outputs.FILES_CHANGED != null && github.event_name == 'pull_request' }}
-      run: echo "TARGET_BRANCH=${{ github.head_ref }}" >> $GITHUB_ENV
-
-    - name: Set target branch (push)
-      if: ${{ steps.changes.outputs.FILES_CHANGED != null && github.event_name == 'push' }}
-      run: echo "TARGET_BRANCH=${{ github.ref_name }}" >> $GITHUB_ENV
-
-    - name: Through undefined branch error
-      if: ${{ steps.changes.outputs.FILES_CHANGED != null && env.TARGET_BRANCH == null}}
-      run: echo "TARGET_BRANCH is undefined" 1>&2 && expr 0 > /dev/null
-
     - name: Refactor
       if: ${{ steps.changes.outputs.FILES_CHANGED != null }}
       run: |
@@ -52,7 +55,7 @@ jobs:
         git config --global user.email "action@github.com"
         git config --global user.name "action"
         git add .
-        (git commit -m "Refactor by Github Actions" && git push --push-option=ci.skip origin HEAD:${{ env.TARGET_BRANCH }}) || expr 1 > /dev/null
+        (git commit -m "Refactor by Github Actions" && git push origin HEAD:${{ env.TARGET_BRANCH }}) || expr 1 > /dev/null
     
   build:
     needs: refactor
