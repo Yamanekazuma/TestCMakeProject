@@ -18,11 +18,16 @@ jobs:
     steps:
     - name: Set target branch (PR)
       if: ${{ github.event_name == 'pull_request' }}
-      run: echo "TARGET_BRANCH=${{ github.head_ref }}" >> $GITHUB_ENV
+      run: |
+        echo "BEFORE=origin/${{ GITHUB_BASE_REF#refs/heads/ }}" >> $GITHUB_ENV
+        echo "TARGET_BRANCH=${{ github.head_ref }}" >> $GITHUB_ENV
+        git fetch origin ${{ GITHUB_BASE_REF#refs/heads/ }} --depth=1
 
     - name: Set target branch (push)
       if: ${{ github.event_name == 'push' }}
-      run: echo "TARGET_BRANCH=${{ github.ref_name }}" >> $GITHUB_ENV
+      run: |
+        echo "BEFORE=${{ github.event.before }}" >> $GITHUB_ENV
+        echo "TARGET_BRANCH=${{ github.ref_name }}" >> $GITHUB_ENV
 
     - name: Through error
       if: ${{ env.TARGET_BRANCH == null}}
@@ -37,11 +42,11 @@ jobs:
     - name: Set changed files
       id: changes
       run: |
-        git diff --name-status ${{ github.event.before }} ${{ github.sha }}
-        echo "FILES_CHANGED=`                                                                                      \
-          (git diff --name-only --diff-filter=AM ${{ github.event.before }} ${{ github.sha }} 2> /dev/null) \
-          | grep -E "^.*\.(c|h|cpp|hpp)"                                                                           \
-          | sed -z "s/\n/ /g"                                                                                      \
+        git diff --name-status ${{ env.BEFORE }} HEAD
+        echo "FILES_CHANGED=`                                                         \
+          (git diff --name-only --diff-filter=AM ${{ env.BEFORE }} HEAD 2> /dev/null) \
+          | grep -E "^.*\.(c|h|cpp|hpp)"                                              \
+          | sed -z "s/\n/ /g"                                                         \
         `" >> $GITHUB_OUTPUT
 
     - name: Setup python
