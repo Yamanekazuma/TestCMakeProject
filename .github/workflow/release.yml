@@ -1,0 +1,18 @@
+name: Release from tag
+
+on:
+  push:
+    tags:
+      - v[0-9]+.[0-9]+.[0-9]+*
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Print Debug
+      run: |
+        echo ${{ github.ref }}
