@@ -42,9 +42,8 @@ jobs:
       run: |
         git fetch origin main --depth 1
         echo "FILES_CHANGED=`\
-          git diff --name-status origin/main..HEAD \
-          | grep -E "^(M|A|R).*\.(c|h|cpp|hpp)"    \
-          | sed -sr "s/^(R|A|M).*\t(.+)/\2/"       \
+          (git diff --name-only --diff-filter=AM origin/${{ GITHUB_BASE_REF }}..HEAD 2> /dev/null) \
+          | grep -E "^.*\.(c|h|cpp|hpp)"           \
           | sed -z "s/\n/ /g"                      \
         `" >> $GITHUB_OUTPUT
 
