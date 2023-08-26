@@ -32,5 +32,5 @@ if (true) {
 }
 }
 }
-return 127;
+return 1;
 }
