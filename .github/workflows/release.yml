@@ -19,7 +19,7 @@ jobs:
 
     - name: Get next tag
       id: tag
-      run: echo "NEXT_VERSION=`gh release list | grep "Draft" | awk "{print $3}"`" >> GITHUB_OUTPUT
+      run: echo "NEXT_VERSION=`gh release list | grep "Draft" | awk '{print $3}'`" >> GITHUB_OUTPUT
 
     - name: Get versions
       id: versions
