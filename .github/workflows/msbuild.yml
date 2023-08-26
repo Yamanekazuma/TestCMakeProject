@@ -37,6 +37,7 @@ jobs:
       id: changes
       run: |
         git fetch origin main --depth 1
+        git diff --name-only --diff-filter=AM origin/main..HEAD 2> /dev/null
         echo "FILES_CHANGED=`\
           (git diff --name-only --diff-filter=AM origin/main..HEAD 2> /dev/null) \
           | grep -E "^.*\.(c|h|cpp|hpp)"           \
