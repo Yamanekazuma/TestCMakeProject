@@ -19,9 +19,9 @@ jobs:
     - name: Set target branch (PR)
       if: ${{ github.event_name == 'pull_request' }}
       run: |
-        echo "BEFORE=origin/${{ GITHUB_BASE_REF#refs/heads/ }}" >> $GITHUB_ENV
+        echo "BEFORE=origin/${{ github.base_ref }}" >> $GITHUB_ENV
         echo "TARGET_BRANCH=${{ github.head_ref }}" >> $GITHUB_ENV
-        git fetch origin ${{ GITHUB_BASE_REF#refs/heads/ }} --depth=1
+        git fetch origin ${{ github.base_ref }} --depth=1
 
     - name: Set target branch (push)
       if: ${{ github.event_name == 'push' }}
