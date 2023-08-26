@@ -39,8 +39,7 @@ jobs:
         git config --global user.email "action@github.com"
         git config --global user.name "action"
         git add .
-        git commit -m "Update Versions by Github Actions"
-        git push origin main
+        (git commit -m "Update Versions by Github Actions" && git push origin main) || expr 1 > /dev/null
 
     - name: Release from draft
       run: gh release edit ${{ steps.tag.outputs.NEXT_VERSION }} --draft=false
