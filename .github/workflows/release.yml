@@ -16,7 +16,7 @@ jobs:
     steps:
     - uses: actions/checkout@v3
       with:
-        ref: ${{ github.ref_name }}
+        ref: main
 
     - name: Get versions
       id: versions
@@ -37,4 +37,4 @@ jobs:
         git config --global user.name "action"
         git add .
         git commit -m "Update Versions by Github Actions"
-        git push origin ${{ github.ref_name }}
+        git push origin ${{ github.main }}
