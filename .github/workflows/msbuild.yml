@@ -66,7 +66,9 @@ jobs:
 
     - name: Analyze with lizard
       if: ${{ steps.changes.outputs.FILES_CHANGED != null }}
-      run: lizard -l cpp -w ${{ steps.changes.outputs.FILE_CHANGED }}
+      run: |
+        echo "::add-matcher::.github/lizard.json"
+        lizard -l cpp -w ${{ steps.changes.outputs.FILE_CHANGED }}
 
   build:
     needs: refactor_and_analyze
