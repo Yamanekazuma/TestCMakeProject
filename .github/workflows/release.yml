@@ -43,4 +43,4 @@ jobs:
         git push origin main
 
     - name: Release from draft
-      run: gh edit ${{ steps.tag.outputs.NEXT_VERSION }} --draft=false
+      run: gh release edit ${{ steps.tag.outputs.NEXT_VERSION }} --draft=false
