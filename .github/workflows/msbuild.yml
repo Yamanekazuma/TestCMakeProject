@@ -4,9 +4,6 @@ on:
   pull_request:
     branches: [ "main" ]
 
-env:
-  SOLUTION_FILE_PATH: .
-
 permissions:
   contents: write
 
@@ -14,40 +11,21 @@ jobs:
   refactor_and_analyze:
     runs-on: ubuntu-latest
     steps:
-    - name: Set target branch (PR)
-      if: ${{ github.event_name == 'pull_request' }}
-      run: |
-        echo "BEFORE=origin/${{ github.base_ref }}" >> $GITHUB_ENV
-        echo "TARGET_BRANCH=${{ github.head_ref }}" >> $GITHUB_ENV
-
-    - name: Set target branch (push)
-      if: ${{ github.event_name == 'push' }}
-      run: |
-        echo "BEFORE=${{ github.event.before }}" >> $GITHUB_ENV
-        echo "TARGET_BRANCH=${{ github.ref_name }}" >> $GITHUB_ENV
-
-    - name: Through error
-      if: ${{ env.TARGET_BRANCH == null}}
-      run: echo 'TARGET_BRANCH is undefined.' >> $GITHUB_STEP_SUMMARY | expr 0 > /dev/null
-
     - name: Checkout
       uses: actions/checkout@v3
       with:
-        ref: ${{ env.TARGET_BRANCH }}
+        ref: ${{ github.head_ref }}
         fetch-depth: 0
 
-    - name: Fetch dest branch (PR)
-      if: ${{ github.event_name == 'pull_request' }}
-      run: git fetch origin ${{ github.base_ref }} --depth=1
-    
     - name: Set changed files
       id: changes
       run: |
-        git diff --name-status ${{ env.BEFORE }} HEAD
-        echo "FILES_CHANGED=`                                                         \
-          (git diff --name-only --diff-filter=AM ${{ env.BEFORE }} HEAD 2> /dev/null) \
-          | grep -E "^.*\.(c|h|cpp|hpp)"                                              \
-          | sed -z "s/\n/ /g"                                                         \
+        git fetch origin ${{ github.base_ref }} --depth=1
+        git diff --name-status ${{ github.base_ref }} HEAD
+        echo "FILES_CHANGED=`                                                              \
+          (git diff --name-only --diff-filter=AM ${{ github.base_ref }} HEAD 2> /dev/null) \
+          | grep -E "^.*\.(c|h|cpp|hpp)"                                                   \
+          | sed -z "s/\n/ /g"                                                              \
         `" >> $GITHUB_OUTPUT
 
     - name: Setup python
@@ -69,7 +47,7 @@ jobs:
         git config --global user.email "action@github.com"
         git config --global user.name "action"
         git add .
-        (git commit -m "Refactor by Github Actions" && git push origin HEAD:${{ env.TARGET_BRANCH }}) || expr 1 > /dev/null
+        (git commit -m "Refactor by Github Actions" && git push origin HEAD) || expr 1 > /dev/null
 
     - name: Analyze with lizard
       if: ${{ steps.changes.outputs.FILES_CHANGED != null }}
@@ -94,7 +72,6 @@ jobs:
         arch: ${{ matrix.arch }}
 
     - name: Build
-      working-directory: ${{env.GITHUB_WORKSPACE}}
       run: |
         cmake --preset ${{ matrix.arch }}-${{ matrix.variants }}
         cmake --build out/build/${{ matrix.arch }}-${{ matrix.variants }}
